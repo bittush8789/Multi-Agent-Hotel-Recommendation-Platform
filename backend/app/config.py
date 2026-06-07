@@ -19,6 +19,8 @@ class Settings(BaseSettings):
 
     # Vector DB
     CHROMA_DB_PATH: str = "./chroma_db"
+    CHROMA_HOST: Optional[str] = None
+    CHROMA_PORT: int = 8000
 
     # LangSmith Tracing (Optional)
     LANGCHAIN_TRACING_V2: str = "false"

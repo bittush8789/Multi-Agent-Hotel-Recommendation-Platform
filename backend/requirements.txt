@@ -13,3 +13,5 @@ pydantic-settings>=2.3.3
 requests>=2.32.3
 pytest>=8.2.2
 cryptography>=42.0.8
+prometheus-fastapi-instrumentator>=7.0.0
+prometheus-client>=0.20.0

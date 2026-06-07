@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: hotel-ai
+data:
+  # General Configs
+  HOST: "0.0.0.0"
+  PORT: "8000"
+  DATABASE_URL: "sqlite:///./travelmind.db"
+  
+  # ChromaDB connection config
+  CHROMA_HOST: "chromadb-service"
+  CHROMA_PORT: "8000"
+  CHROMA_DB_PATH: "/workspace/chroma_db"
+  
+  # LangSmith Tracing configurations for LLMOps
+  LANGCHAIN_TRACING_V2: "true"
+  LANGCHAIN_ENDPOINT: "https://api.smith.langchain.com"
+  LANGCHAIN_PROJECT: "hotel-recommendation-platform"
+  LLM_MODEL: "llama-3.3-70b-versatile"
+  
+  # Frontend to Backend connection URL
+  BACKEND_URL: "http://backend-service:8000"

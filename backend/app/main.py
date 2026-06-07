@@ -15,6 +15,8 @@ from app.schemas.api_models import (
     PreferencesSchema
 )
 from app.agents.graph import run_agent_pipeline
+from prometheus_fastapi_instrumentator import Instrumentator
+
 
 app = FastAPI(
     title="TravelMind AI API",
@@ -35,6 +37,8 @@ app.add_middleware(
 def startup_event():
     # Initialize SQLite database schema
     init_db()
+    # Expose prometheus metrics
+    Instrumentator().instrument(app).expose(app)
 
 @app.get("/")
 def read_root():

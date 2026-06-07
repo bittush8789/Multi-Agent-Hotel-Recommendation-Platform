@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-internal-traffic
+  namespace: hotel-ai
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    # Allow all pods within the same namespace to communicate with each other
+    - from:
+        - podSelector: {}
+    # Allow external connections to frontend and backend services
+    - ports:
+        - protocol: TCP
+          port: 8000
+        - protocol: TCP
+          port: 8501

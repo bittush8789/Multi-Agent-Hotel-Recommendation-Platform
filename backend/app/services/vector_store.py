@@ -6,11 +6,12 @@ from app.config import settings
 
 class VectorStoreService:
     def __init__(self):
-        # Create persistent directory if it doesn't exist
-        os.makedirs(settings.CHROMA_DB_PATH, exist_ok=True)
-        
-        # Initialize persistent ChromaDB client
-        self.client = chromadb.PersistentClient(path=settings.CHROMA_DB_PATH)
+        # Initialize ChromaDB client based on settings (HTTP or Persistent)
+        if settings.CHROMA_HOST:
+            self.client = chromadb.HttpClient(host=settings.CHROMA_HOST, port=settings.CHROMA_PORT)
+        else:
+            os.makedirs(settings.CHROMA_DB_PATH, exist_ok=True)
+            self.client = chromadb.PersistentClient(path=settings.CHROMA_DB_PATH)
         
         # Use default MiniLM-L6-v2 embedding function provided by Chroma
         self.embedding_function = embedding_functions.DefaultEmbeddingFunction()
