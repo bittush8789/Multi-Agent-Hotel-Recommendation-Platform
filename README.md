@@ -4,12 +4,18 @@
 [![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)](https://streamlit.io)
 [![LangChain](https://img.shields.io/badge/LangChain-1C3C3A?style=for-the-badge&logo=chainlink&logoColor=white)](https://langchain.com)
 [![LangGraph](https://img.shields.io/badge/LangGraph-121212?style=for-the-badge&logo=graph&logoColor=white)](https://langchain-ai.github.io/langgraph/)
+[![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://www.sqlite.org)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com)
-[![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com)
 [![Groq](https://img.shields.io/badge/Groq-F55036?style=for-the-badge&logo=groq&logoColor=white)](https://groq.com)
 [![Llama 3.3](https://img.shields.io/badge/Llama_3.3_70B-040D21?style=for-the-badge&logo=meta&logoColor=white)](https://meta.com)
 
 **TravelMind AI** is a production-grade, Agentic AI-powered hotel recommendation system. It leverages multiple specialized AI agents orchestrated via **LangGraph** to deliver deeply personalized, data-driven, and context-aware accommodation recommendations. By combining real-time search, semantic review analysis (via RAG), dynamic pricing evaluation, and preference profiling, TravelMind AI redefines how travelers discover their next stay.
+
+---
+
+## 🖥️ Application UI Preview
+
+![TravelMind AI Dashboard](assets/app_screenshot.png)
 
 ---
 
@@ -18,14 +24,14 @@
 * [📖 Problem Statement & Solution](#-problem-statement--solution)
 * [🏗️ System Architecture](#%EF%B8%8F-system-architecture)
 * [🔄 Multi-Agent Workflow](#-multi-agent-workflow)
-* [🤖 Meet the Agents](#-meet the-agents)
+* [🤖 Meet the Agents](#-meet-the-agents)
 * [✨ Key Features](#-key-features)
 * [📂 Project Directory Structure](#-project-directory-structure)
 * [⚙️ Environment Variables Setup](#%EF%B8%8F-environment-variables-setup)
 * [🚀 Getting Started (Local Development)](#-getting-started-local-development)
 * [🐳 Docker Deployment](#-docker-deployment)
 * [🔌 API Reference](#-api-reference)
-* [🎯 Resume-Worthy Achievements & Learning Outcomes](#-resume-worthy-achievements--learning-outcomes)
+* [🎯 Portfolio & Learning Outcomes](#-portfolio--learning-outcomes)
 * [🔮 Future Roadmap](#-future-roadmap)
 * [🤝 Contributing](#-contributing)
 * [📄 License](#-license)
@@ -62,7 +68,7 @@ graph TD
 
     %% Storage & Vector DB
     subgraph Database [Storage & Retrieval Layer]
-        E[(MySQL Database)]
+        E[(SQLite Database)]
         F[(ChromaDB Vector Store)]
     end
 
@@ -80,7 +86,7 @@ graph TD
     C <-->|Invokes LLM| G
     C <-->|Queries Reviews RAG| F
     C <-->|Fetches Live Prices| H
-    B <-->|Saves History & Users| E
+    B <-->|Saves History & Bookmarks| E
     G -.->|Traces Logs| I
     C -.->|Traces Logs| I
 ```
@@ -136,6 +142,7 @@ The system divides responsibilities among five micro-agents:
 
 - **🧠 Multi-Agent Orchestration**: Powered by LangGraph to maintain context, handle state transitions, and recovery cycles between agents.
 - **🔍 Real-Time Hotel Search**: Integrates with SerpAPI to pull live inventory, availability, and pricing from Google Hotels.
+- **🔗 Direct Booking Integration**: Automatically resolves and displays booking/detail links for recommended hotels, keeping links persistent in database bookmarks.
 - **📚 Semantic Review Intelligence (RAG)**: Uses local vector database ChromaDB and `all-MiniLM-L6-v2` embeddings to perform semantic search on hotel reviews to uncover genuine customer sentiments.
 - **💰 Smart Pricing Analysis**: Auto-calculates average market price for destinations and ranks listings by their value-for-money index.
 - **📊 Interactive UI**: Streamlit dashboard featuring intuitive search history tracking, comparative visual charts, and saved hotel bookmarks.
@@ -147,12 +154,14 @@ The system divides responsibilities among five micro-agents:
 
 ```
 travelmind-ai/
+├── assets/
+│   └── app_screenshot.png       # Application UI screenshot for documentation
 ├── backend/
 │   ├── app/
 │   │   ├── __init__.py
 │   │   ├── main.py              # FastAPI main entry point
 │   │   ├── config.py            # Environment configurations & loading
-│   │   ├── database.py          # SQLAlchemy MySQL configuration and schemas
+│   │   ├── database.py          # SQLAlchemy SQLite configuration and schemas
 │   │   ├── agents/              # LangGraph Agent logic
 │   │   │   ├── __init__.py
 │   │   │   ├── graph.py         # Graph construction and compilation
@@ -173,9 +182,6 @@ travelmind-ai/
 │   └── requirements.txt
 ├── frontend/
 │   ├── app.py                   # Streamlit Frontend application
-│   ├── components/
-│   │   ├── __init__.py
-│   │   └── ui_helpers.py        # Markdown renderers & plots
 │   ├── Dockerfile
 │   └── requirements.txt
 ├── docker-compose.yml           # Multi-container local deployment
@@ -196,15 +202,11 @@ HOST=0.0.0.0
 PORT=8000
 
 # Database Configurations
-MYSQL_HOST=localhost
-MYSQL_PORT=3306
-MYSQL_USER=travel_user
-MYSQL_PASSWORD=travel_secure_pass
-MYSQL_DB=travelmind_db
+DATABASE_URL=sqlite:///./travelmind.db
 
 # LLM Provider Keys
 GROQ_API_KEY=gsk_...
-LLM_MODEL=llama3-70b-8192
+LLM_MODEL=llama-3.3-70b-versatile
 
 # Hotel Search Engine API
 SERPAPI_API_KEY=your_serpapi_api_key_here
@@ -213,7 +215,7 @@ SERPAPI_API_KEY=your_serpapi_api_key_here
 CHROMA_DB_PATH=./chroma_db
 
 # Observability (LangSmith - Optional but Recommended)
-LANGCHAIN_TRACING_V2=true
+LANGCHAIN_TRACING_V2=false
 LANGCHAIN_ENDPOINT=https://api.smith.langchain.com
 LANGCHAIN_API_KEY=lsv2_pt_...
 LANGCHAIN_PROJECT=travelmind-ai
@@ -225,30 +227,29 @@ LANGCHAIN_PROJECT=travelmind-ai
 
 ### Prerequisites
 - Python 3.10+
-- MySQL Server 8.0+
-- Node/npm (optional, for tools)
+- SQLite (Built-in with Python)
 
 ### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/your-username/travelmind-ai.git
-cd travelmind-ai
+git clone https://github.com/bittush8789/Multi-Agent-Hotel-Recommendation-Platform.git
+cd Multi-Agent-Hotel-Recommendation-Platform
 ```
 
 ### Step 2: Set Up Backend
-1. Navigate to the backend directory and create a virtual environment:
+1. Navigate to the backend directory and activate the main virtual environment:
    ```bash
    cd backend
-   python -m venv venv
-   source venv/bin/activate  # On Windows: .\venv\Scripts\activate
+   # To use the workspace root environment:
+   ..\venv\Scripts\activate
    ```
 2. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-3. Set up the `.env` file inside `backend/` using the instructions in the [Environment Variables](#%EF%B8%8F-environment-variables-setup) section.
+3. Set up the `.env` file inside `backend/` using the template.
 4. Run the FastAPI development server:
    ```bash
-   uvicorn app.main:app --reload --port 8000
+   python -m uvicorn app.main:app --reload --port 8000
    ```
    *The Swagger interactive API documentation will be available at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).*
 
@@ -256,8 +257,7 @@ cd travelmind-ai
 1. In a new terminal tab, navigate to the frontend directory:
    ```bash
    cd frontend
-   python -m venv venv
-   source venv/bin/activate  # On Windows: .\venv\Scripts\activate
+   ..\venv\Scripts\activate
    ```
 2. Install dependencies:
    ```bash
@@ -265,24 +265,24 @@ cd travelmind-ai
    ```
 3. Launch the Streamlit application:
    ```bash
-   streamlit run app.py
+   python -m streamlit run app.py --server.port 8501
    ```
-   *The user interface will be open at [http://localhost:8501](http://localhost:8501).*
+   *The user interface will open at [http://localhost:8501](http://localhost:8501).*
 
 ---
 
 ## 🐳 Docker Deployment
 
-To spin up the entire ecosystem (FastAPI, Streamlit, MySQL, and ChromaDB) with a single command, run the following at the root directory:
+To spin up the entire ecosystem (FastAPI, Streamlit, and ChromaDB) with a single command, run the following at the root directory:
 
 ```bash
 # Build and start all services in detached mode
-docker-compose up --build -d
+docker compose up --build -d
 ```
 
 ### Checking Container Health
 ```bash
-docker-compose ps
+docker compose ps
 ```
 
 - **Frontend**: Accessible at `http://localhost:8501`
@@ -300,7 +300,7 @@ docker-compose ps
 **Request Body Schema:**
 ```json
 {
-  "user_id": 42,
+  "user_id": "guest_user_777",
   "query": "Looking for a luxury boutique resort in Kyoto near traditional shrines, budget around $300/night with a spa.",
   "check_in_date": "2026-11-15",
   "check_out_date": "2026-11-20"
@@ -325,7 +325,8 @@ docker-compose ps
       "value_score": 9.2,
       "matching_score": 95.0,
       "review_insights": "Guests highly recommend the on-site hot spring spa and direct access to Yasaka Shrine. The quiet rooms are ideal for relaxation.",
-      "reasoning": "Fits your preference for traditional shrine proximity, falls within budget, and includes top-rated spa services."
+      "reasoning": "Fits your preference for traditional shrine proximity, falls within budget, and includes top-rated spa services.",
+      "link": "https://www.google.com/travel/hotels?q=Kyoto+Heritage+Inn+and+Spa"
     }
   ]
 }
@@ -333,30 +334,16 @@ docker-compose ps
 
 ### 2. Saved Hotels Management
 * **URL**: `/api/v1/saved-hotels`
-* **Method**: `GET` (Fetch user's saved list) / `POST` (Save a hotel)
-* **Headers**: `Authorization: Bearer <token>`
+* **Method**: `GET` (Fetch user's saved bookmarks) / `POST` (Save a recommended hotel bookmark)
 
 ---
 
-## 📸 Screenshots Placeholders
-
-*Below are UI showcases depicting the TravelMind AI user journey:*
-
-### 🗺️ Dynamic Search Panel & Preferences Extraction
-![Preferences Extraction Screen](https://raw.githubusercontent.com/your-username/travelmind-ai/main/assets/preferences_screenshot.png)
-*Figure 1: The UI shows the real-time breakdown of user queries into structured constraints (Budget, Trip Style, and Amenities).*
-
-### 📊 Hotel Comparison Dashboard
-![Comparison Dashboard](https://raw.githubusercontent.com/your-username/travelmind-ai/main/assets/comparison_screenshot.png)
-*Figure 2: Custom interactive dashboards displaying pricing analysis compared to location-average along with matching score breakdowns.*
-
----
-
-## 🎯 Resume-Worthy Achievements & Learning Outcomes
+## 🎯 Portfolio & Learning Outcomes
 
 If you are showcasing this project in your portfolio, here are key achievements and skills you have demonstrated:
 
 * **Complex State Management with LangGraph**: Designed a non-linear state graph with self-correcting routing nodes, handling fallback scenarios when external APIs fail or search returns empty results.
+* **Database Design & Auto-Migrations**: Employed SQLAlchemy to map records seamlessly to a lightweight SQLite engine, complete with runtime schema auto-migration techniques (e.g. dynamic column alteration scripts) to ensure high compatibility.
 * **Semantic Vector Databases**: Implemented a local RAG pipeline with **ChromaDB**, tokenizing and embedding raw customer reviews using `all-MiniLM-L6-v2` to bypass simple keyword matching and isolate semantic guest pain points.
 * **Production Observability**: Leveraged **LangSmith** to monitor LLM token cost, latency bottlenecks, and debug agent prompt boundaries, achieving a **30% reduction in token consumption** by optimizing system prompts.
 * **Multi-Container Microservices**: Assembled a scalable local workspace utilizing Docker Compose, separating concerns into decoupled database, vector DB, API backend, and dashboard UI networks.
